@@ -5,10 +5,10 @@ TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="23.0.4"
 TERMUX_PKG_SRCURL=https://archive.mesa3d.org/mesa-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=69ccb1278641ff5bad71ca0f866188aeb1a92aadc4dbb9d35f50aebec5b8b50f
+TERMUX_PKG_SHA256=ee7f2cad1c58f943ea3048e59871908900b0a656ebdcf6a309e60af4270792f6
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libglvnd, libwayland, libx11, libxext, libxfixes, libxshmfence, libxxf86vm, ncurses, vulkan-loader, zlib, zstd"
-TERMUX_PKG_SUGGESTS="mesa-dev"
+TERMUX_PKG_SUGGESTS="mesa-old-dev"
 TERMUX_PKG_BUILD_DEPENDS="libllvm-static, libwayland-protocols, libxrandr, llvm, llvm-tools, mlir, xorgproto"
 TERMUX_PKG_CONFLICTS="libmesa, ndk-sysroot (<= 25b)"
 TERMUX_PKG_REPLACES="libmesa"
