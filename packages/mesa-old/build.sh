@@ -16,7 +16,6 @@ TERMUX_PKG_REPLACES="libmesa"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --cmake-prefix-path $TERMUX_PREFIX
 -Dcpp_rtti=false
--Dgbm=enabled
 -Dopengl=true
 -Degl=enabled
 -Degl-native-platform=x11
@@ -24,10 +23,11 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dgles2=enabled
 -Ddri3=enabled
 -Dglx=dri
--Dllvm=enabled
+-Dllvm=disabled
 -Dshared-llvm=disabled
 -Dplatforms=x11,wayland
 -Dgallium-drivers=swrast,virgl,zink
+-Dvulkan-drivers=
 -Dosmesa=true
 -Dglvnd=true
 -Dxmlconfig=disabled
@@ -59,13 +59,8 @@ termux_step_pre_configure() {
 	fi
 	export PATH=$_WRAPPER_BIN:$PATH
 
-	if [ $TERMUX_ARCH = "arm" ] || [ $TERMUX_ARCH = "aarch64" ]; then
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast,freedreno"
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dfreedreno-kmds=msm,kgsl"
-	elif [ $TERMUX_ARCH = "i686" ] || [ $TERMUX_ARCH = "x86_64" ]; then
+	if [ $TERMUX_ARCH = "i686" ] || [ $TERMUX_ARCH = "x86_64" ]; then
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast"
-	else
-		termux_error_exit "Invalid arch: $TERMUX_ARCH"
 	fi
 }
 
