@@ -5,4 +5,5 @@ TERMUX_SUBPKG_EXCLUDED_ARCHES="arm, i686, x86_64"
 TERMUX_SUBPKG_INCLUDE="
 lib/libvulkan_panfrost.so
 share/vulkan/icd.d/panfrost_icd.*.json
+lib/libpanfrost_noop_drm_shim.so
 "
