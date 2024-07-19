@@ -22,6 +22,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dxmlconfig=disabled
 -Dvulkan-drivers=freedreno,virtio,panfrost
 -Dfreedreno-kmds=msm,kgsl
+-Dtools=drm-shim
 "
 
 TERMUX_PKG_BLACKLISTED_ARCHES="i686, x86_64"
