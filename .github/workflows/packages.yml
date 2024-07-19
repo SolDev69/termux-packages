@@ -6,6 +6,7 @@ on:
     - master
     - dev
     - 'dev/**'
+    - xmem-pkgs
     paths:
     - 'packages/**'
     - 'root-packages/**'
