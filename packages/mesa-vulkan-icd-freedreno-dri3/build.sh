@@ -20,7 +20,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dplatforms=x11,wayland
 -Dgallium-drivers=
 -Dxmlconfig=disabled
--Dvulkan-drivers=freedreno,virtio
+-Dvulkan-drivers=freedreno,virtio,panfrost
 -Dfreedreno-kmds=msm,kgsl
 "
 
