@@ -5,7 +5,7 @@ TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="@SolDev69"
 TERMUX_PKG_VERSION="24.0.9-UMP"
 TERMUX_PKG_REVISION=1
-TERMUX_PKG_SRCURL=https://www.dropbox.com/scl/fi/phbh5reqks36g1ppf694n/mesa-24.0.9-UMP.tar.xz?rlkey=drm2zmy3ytudn3c5njzt2y8dh&st=awsdfofs&dl=1
+TERMUX_PKG_SRCURL="https://www.dropbox.com/scl/fi/phbh5reqks36g1ppf694n/mesa-24.0.9-UMP.tar.xz?rlkey=drm2zmy3ytudn3c5njzt2y8dh&st=awsdfofs&dl=1"
 TERMUX_PKG_SHA256=179fd38a694a0041e9fe95d5b34962237ed08fbd1e81214ad552feab7751c725
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libglvnd, libwayland, libx11, libxext, libxfixes, libxshmfence, libxxf86vm, ncurses, vulkan-loader, zlib, zstd"
