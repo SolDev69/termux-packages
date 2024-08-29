@@ -2,17 +2,16 @@ TERMUX_PKG_HOMEPAGE=https://www.mesa3d.org
 TERMUX_PKG_DESCRIPTION="An open-source implementation of the OpenGL specification"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
-TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="24.2.0"
+TERMUX_PKG_MAINTAINER="@SolDev69"
+TERMUX_PKG_VERSION="24.0.9-UMP"
 TERMUX_PKG_REVISION=1
-TERMUX_PKG_SRCURL=https://archive.mesa3d.org/mesa-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=c02bb72cea290f78b11895a0c95c7c92394f180d7ff66d4a762ec6950a58addf
+TERMUX_PKG_SRCURL=https://github.com/SolDev69/files/raw/main/mesa-${TERMUX_PKG_VERSION}.tar.xz
+TERMUX_PKG_SHA256=179fd38a694a0041e9fe95d5b34962237ed08fbd1e81214ad552feab7751c725
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libglvnd, libwayland, libx11, libxext, libxfixes, libxshmfence, libxxf86vm, ncurses, vulkan-loader, zlib, zstd"
-TERMUX_PKG_SUGGESTS="mesa-dev"
 TERMUX_PKG_BUILD_DEPENDS="libllvm-static, libwayland-protocols, libxrandr, llvm, llvm-tools, mlir, xorgproto"
-TERMUX_PKG_CONFLICTS="libmesa, ndk-sysroot (<= 25b)"
-TERMUX_PKG_REPLACES="libmesa"
+TERMUX_PKG_CONFLICTS="libmesa, mesa, ndk-sysroot (<= 25b)"
+TERMUX_PKG_REPLACES="libmesa, mesa"
 
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --cmake-prefix-path $TERMUX_PREFIX
