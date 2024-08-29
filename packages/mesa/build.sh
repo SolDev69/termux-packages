@@ -31,7 +31,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dosmesa=true
 -Dglvnd=true
 -Dxmlconfig=disabled
--Dbuildtype=debug
 "
 
 termux_step_post_get_source() {
