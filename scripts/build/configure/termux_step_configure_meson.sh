@@ -15,6 +15,7 @@ termux_step_configure_meson() {
 		--$(test "${TERMUX_PKG_MESON_NATIVE}" = "true" && echo "native-file" || echo "cross-file") $TERMUX_MESON_CROSSFILE \
 		--prefix $TERMUX_PREFIX \
 		--libdir lib \
+		--buildtype debug \
 		${_meson_stripflag} \
 		$TERMUX_PKG_EXTRA_CONFIGURE_ARGS \
 		|| (termux_step_configure_meson_failure_hook && false)
