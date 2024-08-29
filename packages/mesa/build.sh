@@ -9,6 +9,7 @@ TERMUX_PKG_SRCURL=https://github.com/SolDev69/files/raw/main/mesa-${TERMUX_PKG_V
 TERMUX_PKG_SHA256=179fd38a694a0041e9fe95d5b34962237ed08fbd1e81214ad552feab7751c725
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libglvnd, libwayland, libx11, libxext, libxfixes, libxshmfence, libxxf86vm, ncurses, vulkan-loader, zlib, zstd"
+TERMUX_PKG_SUGGESTS="mesa-dev"
 TERMUX_PKG_BUILD_DEPENDS="libllvm-static, libwayland-protocols, libxrandr, llvm, llvm-tools, mlir, xorgproto"
 TERMUX_PKG_CONFLICTS="libmesa, mesa, ndk-sysroot (<= 25b)"
 TERMUX_PKG_REPLACES="libmesa, mesa"
