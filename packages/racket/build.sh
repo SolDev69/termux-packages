@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://racket-lang.org
 TERMUX_PKG_DESCRIPTION="Full-spectrum programming language going beyond Lisp and Scheme"
 TERMUX_PKG_LICENSE="GPL-3.0, LGPL-3.0"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="8.13"
+TERMUX_PKG_VERSION="9.0"
 TERMUX_PKG_SRCURL=https://www.cs.utah.edu/plt/installers/${TERMUX_PKG_VERSION}/racket-minimal-${TERMUX_PKG_VERSION}-src-builtpkgs.tgz
-TERMUX_PKG_SHA256=564b85993fe698d54cb0022a1fd404db9b5cf6f0711980d14aeea2af101eaf66
+TERMUX_PKG_SHA256=b765a24f74d5d62d281892f7bd04d6637020c7c4fdf676796df6bbb6e1e8a330
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libffi, libiconv"
 TERMUX_PKG_NO_DEVELSPLIT=true
@@ -33,4 +33,12 @@ termux_step_pre_configure() {
 	CPPFLAGS+=" -I$TERMUX_PKG_SRCDIR/src/bc/include -I$TERMUX_PKG_BUILDDIR/bc"
 	LDFLAGS+=" -liconv -llog"
 	export TERMUX_PKG_SRCDIR="$TERMUX_PKG_SRCDIR/src"
+}
+
+# See: https://github.com/termux/termux-packages/issues/25761
+termux_step_configure() {
+	"$TERMUX_PKG_SRCDIR"/configure \
+		--prefix="$TERMUX_PREFIX" \
+		--host=$TERMUX_HOST_PLATFORM \
+		$TERMUX_PKG_EXTRA_CONFIGURE_ARGS
 }

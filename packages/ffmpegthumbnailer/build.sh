@@ -2,11 +2,12 @@ TERMUX_PKG_HOMEPAGE=https://github.com/dirkvdb/ffmpegthumbnailer
 TERMUX_PKG_DESCRIPTION="Lightweight video thumbnailer that can be used by file managers"
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
-_COMMIT=1b5a77983240bcf00a4ef7702c07bcd8f4e5f97c
-_COMMIT_DATE=20240104
-TERMUX_PKG_VERSION=2.2.2-p${_COMMIT_DATE}
+_COMMIT=0fad619621692aff96e169c2ce60f3f1de6a4f9d
+_COMMIT_DATE=20251103
+TERMUX_PKG_VERSION=2.2.3-p${_COMMIT_DATE}
+TERMUX_PKG_REPOLOGY_METADATA_VERSION="${TERMUX_PKG_VERSION/-p/+git}"
 TERMUX_PKG_SRCURL=git+https://github.com/dirkvdb/ffmpegthumbnailer
-TERMUX_PKG_SHA256=cd768067ddedbdf1574d4e3ac7db7475f2f2539be1faedc515d61eddef6903a6
+TERMUX_PKG_SHA256=fb51d7e33681ad375ce7dc85a12ae63f4923065797120691a1da457837f7b70a
 TERMUX_PKG_GIT_BRANCH=master
 TERMUX_PKG_DEPENDS="ffmpeg, libc++, libjpeg-turbo, libpng"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
@@ -28,6 +29,6 @@ termux_step_post_get_source() {
 
 	local s=$(find . -type f ! -path '*/.git/*' -print0 | xargs -0 sha256sum | LC_ALL=C sort | sha256sum)
 	if [[ "${s}" != "${TERMUX_PKG_SHA256}  "* ]]; then
-		termux_error_exit "Checksum mismatch for source files."
+		termux_error_exit "Checksum mismatch for source files. ${s}"
 	fi
 }

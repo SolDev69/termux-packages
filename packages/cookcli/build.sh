@@ -3,9 +3,9 @@ TERMUX_PKG_DESCRIPTION="A suite of tools to create shopping lists and maintain f
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="LICENSE"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="0.8.0"
+TERMUX_PKG_VERSION="0.19.2"
 TERMUX_PKG_SRCURL=https://github.com/cooklang/cookcli/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=050fcbd7f8f938bd6ffc898a403795101807cfa6d76c787e991c8d90031405c6
+TERMUX_PKG_SHA256=60f3ae79fb0379ee9ec8035745c760e49efe15ef9e91f1a1618d5c89d4bc3463
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_AUTO_UPDATE=true
 
@@ -15,15 +15,14 @@ termux_step_pre_configure() {
 
 	# i686: __atomic_load
 	if [[ "${TERMUX_ARCH}" == "i686" ]]; then
-		RUSTFLAGS+=" -C link-arg=$(${CC} -print-libgcc-file-name)"
+		local env_host=$(printf $CARGO_TARGET_NAME | tr a-z A-Z | sed s/-/_/g)
+		export CARGO_TARGET_${env_host}_RUSTFLAGS+=" -C link-arg=$(${CC} -print-libgcc-file-name)"
 	fi
 }
 
 termux_step_make() {
-	pushd ui
 	npm install
-	npm run build
-	popd
+	npm run build-css
 
 	cargo build --jobs "${TERMUX_PKG_MAKE_PROCESSES}" --target "${CARGO_TARGET_NAME}" --release
 }

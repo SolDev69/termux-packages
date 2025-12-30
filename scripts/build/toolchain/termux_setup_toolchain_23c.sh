@@ -1,7 +1,7 @@
 termux_setup_toolchain_23c() {
 	export CFLAGS=""
 	export CPPFLAGS=""
-	export LDFLAGS="-L${TERMUX_PREFIX}/lib"
+	export LDFLAGS="-L${TERMUX__PREFIX__LIB_DIR}"
 
 	export AS=$TERMUX_HOST_PLATFORM-clang
 	export CC=$TERMUX_HOST_PLATFORM-clang
@@ -17,9 +17,9 @@ termux_setup_toolchain_23c() {
 	export NM=llvm-nm
 	export CXXFILT=llvm-cxxfilt
 
-	export TERMUX_HASKELL_OPTIMISATION="-O"
+	export TERMUX_GHC_OPTIMISATION="-O"
 	if [ "${TERMUX_DEBUG_BUILD}" = true ]; then
-		TERMUX_HASKELL_OPTIMISATION="-O0"
+		TERMUX_GHC_OPTIMISATION="-O0"
 	fi
 
 	if [ "$TERMUX_ON_DEVICE_BUILD" = "false" ]; then
@@ -31,7 +31,7 @@ termux_setup_toolchain_23c() {
 		if [ $TERMUX_ARCH = arm ]; then
 			CCTERMUX_HOST_PLATFORM=armv7a-linux-androideabi$TERMUX_PKG_API_LEVEL
 		fi
-		LDFLAGS+=" -Wl,-rpath=$TERMUX_PREFIX/lib"
+		LDFLAGS+=" -Wl,-rpath=$TERMUX__PREFIX__LIB_DIR"
 	else
 		export CC_FOR_BUILD=$CC
 		# Some build scripts use environment variable 'PKG_CONFIG', so
@@ -64,11 +64,6 @@ termux_setup_toolchain_23c() {
 		termux_error_exit "Invalid arch '$TERMUX_ARCH' - support arches are 'arm', 'i686', 'aarch64', 'x86_64'"
 	fi
 
-	# -static-openmp requires -fopenmp in LDFLAGS to work; hopefully this won't be problematic
-	# even when we don't have -fopenmp in CFLAGS / when we don't want to enable OpenMP
-	# We might also want to consider shipping libomp.so instead; since r21
-	LDFLAGS+=" -fopenmp -static-openmp"
-
 	# Android 7 started to support DT_RUNPATH (but not DT_RPATH).
 	LDFLAGS+=" -Wl,--enable-new-dtags"
 
@@ -87,7 +82,12 @@ termux_setup_toolchain_23c() {
 	fi
 
 	export CXXFLAGS="$CFLAGS"
-	export CPPFLAGS+=" -I${TERMUX_PREFIX}/include"
+	# set the proper header include order - first package includes, then prefix includes
+	# -isystem${TERMUX__PREFIX__BASE_INCLUDE_DIR}/c++/v1 is needed here for on-device building to work correctly
+	export CPPFLAGS+=" -isystem${TERMUX__PREFIX__BASE_INCLUDE_DIR}/c++/v1 -isystem${TERMUX__PREFIX__INCLUDE_DIR}"
+	if [ "$TERMUX_ARCH" != "$TERMUX_REAL_ARCH" ]; then
+		export CPPFLAGS+=" -isystem${TERMUX__PREFIX__BASE_INCLUDE_DIR}"
+	fi
 
 	# If libandroid-support is declared as a dependency, link to it explicitly:
 	if [ "$TERMUX_PKG_DEPENDS" != "${TERMUX_PKG_DEPENDS/libandroid-support/}" ]; then
@@ -97,10 +97,24 @@ termux_setup_toolchain_23c() {
 	export GOOS=android
 	export CGO_ENABLED=1
 	export GO_LDFLAGS="-extldflags=-pie"
-	export CGO_LDFLAGS="${LDFLAGS/ -Wl,-z,relro,-z,now/}"
-	CGO_LDFLAGS="${CGO_LDFLAGS/ -static-openmp/}"
-	export CGO_CFLAGS="-I$TERMUX_PREFIX/include"
-	export RUSTFLAGS="-C link-arg=-Wl,-rpath=$TERMUX_PREFIX/lib -C link-arg=-Wl,--enable-new-dtags"
+	export CGO_CFLAGS="-isystem${TERMUX__PREFIX__INCLUDE_DIR}"
+	if [ "$TERMUX_ARCH" != "$TERMUX_REAL_ARCH" ]; then
+		export CGO_CFLAGS+=" -isystem${TERMUX__PREFIX__BASE_INCLUDE_DIR}"
+	fi
+
+	export CARGO_TARGET_NAME="${TERMUX_ARCH}-linux-android"
+	if [[ "${TERMUX_ARCH}" == "arm" ]]; then
+		CARGO_TARGET_NAME="armv7-linux-androideabi"
+	fi
+	local env_host="${CARGO_TARGET_NAME//-/_}"
+	export CARGO_TARGET_${env_host@U}_LINKER="${CC}"
+	export CARGO_TARGET_${env_host@U}_RUSTFLAGS="-L${TERMUX__PREFIX__LIB_DIR} -C link-arg=-Wl,-rpath=${TERMUX__PREFIX__LIB_DIR} -C link-arg=-Wl,--enable-new-dtags"
+	export CFLAGS_${env_host}="${CPPFLAGS} ${CFLAGS}"
+	export CC_x86_64_unknown_linux_gnu="gcc"
+	export CFLAGS_x86_64_unknown_linux_gnu="-O2"
+	export PKG_CONFIG_x86_64_unknown_linux_gnu="/usr/bin/pkg-config"
+	export PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu="/usr/lib/pkgconfig"
+	export RUST_BACKTRACE="full"
 
 	export ac_cv_func_getpwent=no
 	export ac_cv_func_endpwent=yes
@@ -120,7 +134,7 @@ termux_setup_toolchain_23c() {
 	# Do not put toolchain in place until we are done with setup, to avoid having a half setup
 	# toolchain left in place if something goes wrong (or process is just aborted):
 	local _TERMUX_TOOLCHAIN_TMPDIR=${TERMUX_STANDALONE_TOOLCHAIN}-tmp
-	rm -Rf $_TERMUX_TOOLCHAIN_TMPDIR
+	rm -Rf "$_TERMUX_TOOLCHAIN_TMPDIR"
 
 	local _NDK_ARCHNAME=$TERMUX_ARCH
 	if [ "$TERMUX_ARCH" = "aarch64" ]; then
@@ -131,7 +145,7 @@ termux_setup_toolchain_23c() {
 	cp $NDK/toolchains/llvm/prebuilt/linux-x86_64 $_TERMUX_TOOLCHAIN_TMPDIR -r
 
 	# Remove android-support header wrapping not needed on android-21:
-	rm -Rf $_TERMUX_TOOLCHAIN_TMPDIR/sysroot/usr/local
+	rm -Rf "$_TERMUX_TOOLCHAIN_TMPDIR/sysroot/usr/local"
 
 	for HOST_PLAT in aarch64-linux-android armv7a-linux-androideabi i686-linux-android x86_64-linux-android; do
 		cp $_TERMUX_TOOLCHAIN_TMPDIR/bin/$HOST_PLAT$TERMUX_PKG_API_LEVEL-clang \
@@ -202,16 +216,13 @@ termux_setup_toolchain_23c() {
 	rm -Rf usr/include/vulkan
 	rm -Rf usr/include/{EGL,GLES{,2,3}}
 
-	sed -i "s/define __ANDROID_API__ __ANDROID_API_FUTURE__/define __ANDROID_API__ $TERMUX_PKG_API_LEVEL/" \
-		usr/include/android/api-level.h
-
-	$TERMUX_ELF_CLEANER --api-level=$TERMUX_PKG_API_LEVEL usr/lib/*/*/*.so
+	$TERMUX_ELF_CLEANER --api-level=$TERMUX_PKG_API_LEVEL usr/lib/*/*/*.so | { [[ "${CI-}" == "true" ]] && sed -e '1i\::group::Applying `termux-elf-cleaner`' -e '$a\::endgroup::' || cat; }
 	for dir in usr/lib/*; do
 		# This seem to be needed when building rust
 		# packages
 		echo 'INPUT(-lunwind)' > $dir/libgcc.a
 	done
 
-	grep -lrw $_TERMUX_TOOLCHAIN_TMPDIR/sysroot/usr/include/c++/v1 -e '<version>' | xargs -n 1 sed -i 's/<version>/\"version\"/g'
+	grep -lrw $_TERMUX_TOOLCHAIN_TMPDIR/sysroot/usr/include/c++/v1 -e 'include <version>' | xargs -n 1 sed -i 's/include <version>/include \"version\"/g'
 	mv $_TERMUX_TOOLCHAIN_TMPDIR $TERMUX_STANDALONE_TOOLCHAIN
 }

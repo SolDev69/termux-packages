@@ -2,11 +2,21 @@ TERMUX_PKG_HOMEPAGE=https://just.systems
 TERMUX_PKG_DESCRIPTION="A handy way to save and run project-specific commands"
 TERMUX_PKG_LICENSE="CC0-1.0"
 TERMUX_PKG_MAINTAINER="@flipee"
-TERMUX_PKG_VERSION="1.30.1"
-TERMUX_PKG_SRCURL=https://github.com/casey/just/archive/${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=bc63b5fce7b1805af4e9381fe73ab1e4a8eba6591d9da4251500dfce383e48ba
+TERMUX_PKG_VERSION="1.45.0"
+TERMUX_PKG_SRCURL=https://github.com/casey/just/archive/refs/tags/${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=e43dfa0f541fd8a115fb61de7c30d949d2f169d155fb1776abeaba9be7eb0e07
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_BUILD_IN_SRC=true
+
+termux_step_pre_configure() {
+	termux_setup_rust
+}
+
+termux_step_post_configure() {
+	# clash with rust host build
+	# causes 32bit builds to fail if set
+	unset CFLAGS
+}
 
 termux_step_post_make_install() {
 	mkdir -p "${TERMUX_PREFIX}/share/man/man1"
@@ -19,4 +29,16 @@ termux_step_post_make_install() {
 	cargo run -- --completions   bash > "${TERMUX_PREFIX}/share/bash-completion/completions/just"
 	cargo run -- --completions   fish > "${TERMUX_PREFIX}/share/fish/vendor_completions.d/just.fish"
 	cargo run -- --completions elvish > "${TERMUX_PREFIX}/share/elvish/lib/just.elv"
+
+	# Move the `just` binary to $PREFIX/libexec
+	# and replace it with our --ceiling shim.
+	# See: packages/just/just-shim.sh for details.
+	mkdir -p "$TERMUX_PREFIX/libexec/just"
+	mv "${TERMUX_PREFIX}"/bin/just "${TERMUX_PREFIX}"/libexec/just
+	sed \
+		-e "s|@TERMUX_PREFIX@|${TERMUX_PREFIX}|g" \
+		-e "s|@TERMUX_HOME@|${TERMUX_ANDROID_HOME}|g" \
+		"$TERMUX_PKG_BUILDER_DIR/just-shim.sh" \
+		> "${TERMUX_PREFIX}/bin/just"
+	chmod 700 "${TERMUX_PREFIX}/bin/just"
 }
